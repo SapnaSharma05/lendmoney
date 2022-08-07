@@ -1,0 +1,269 @@
+openapi: 3.0.1
+info:
+  title: 4Finance money lending API
+  description: Loan processing and loan history retrieval service
+  version: 1.0.0
+tags:
+  - name: LoanApplicationJourney
+    description: API to handle loan application requests
+paths:
+  '/newLoanRequest':
+    post:
+      tags:
+        - LoanApplicationJourney
+      summary: Process new loan request
+      description: Processes new loan requests
+      operationId: loanApplicationRequest
+      parameters:
+        - name: applicantName
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: loanAmount
+          in: header
+          required: true
+          schema:
+            type: integer
+        - name: loanTenure
+          in: header
+          schema:
+            type: integer
+        - name: applicantDateOfBirth
+          in: header
+          schema:
+            type: integer
+        - name: gender
+          in: header
+          schema:
+            type: string
+        - name: contactNumber
+          in: header
+          schema:
+            type: string
+        - name: presentAddress
+          in: header
+          schema:
+            type: string
+        - name: permanentAddress
+          in: header
+          schema:
+            type: string
+        - name: taxPayerId
+          in: header
+          schema:
+            type: string
+        - name: employmentStatus
+          in: header
+          schema:
+            type: string
+        - name: noOfDependants
+          in: header
+          schema:
+            type: integer
+        - name: annualIncome
+          in: header
+          schema:
+            type: integer
+        - name: emailAddress
+          in: header
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanResponse'
+              examples:
+                loanApplicationResponse:
+                  $ref: '#/components/examples/loanApplicationResponse'
+        '400':
+          description: Invalid input/request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal service error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/extendLoan':
+    post:
+      tags:
+        - LoanApplicationJourney
+      summary: extend Loan DueDate
+      description: To postpone existing loan
+      operationId: loanPostponeRequest
+      parameters:
+        - name: referenceId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendLoanRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendLoanResponse'
+              examples:
+                loanApplicationResponse:
+                  $ref: '#/components/examples/extendLoanResponse'
+        '400':
+          description: Invalid input/request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal service error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/retrieveLoanHistory':
+    get:
+      tags:
+        - LoanApplicationJourney
+      summary: Get the history of loans for a customer
+      description: Retrieves loan history and loan extensions for a customer
+      operationId: getLoanHistory
+      parameters:
+        - name: taxpayerid
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanHistoryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanHistoryResponse'
+              examples:
+                loanApplicationResponse:
+                  $ref: '#/components/examples/loanHistoryResponse'
+components:
+  schemas:
+    LoanRequest:
+      type: object
+      properties:
+        applicantName:
+          type: string
+        loanAmount:
+          type: integer
+        loanTenure:
+          type: integer
+        applicantDateOfBirth:
+          type: string
+        gender:
+          type: string
+        contactNumber:
+          type: string
+        presentAddress:
+          type : string
+        permanentAddress:
+          type: string
+        taxPayerId:
+          type: string
+        employmentStatus:
+          type: string
+        noOfDependants:
+          type: integer
+        annualIncome:
+          type: integer
+        emailAddress:
+          type: string
+    ExtendLoanRequest:
+      type: object
+      properties:
+        referenceId:
+          type: string
+    ExtendLoanResponse:
+      type: object
+      properties:
+        referenceId:
+          type: string
+        extendedDueDate:
+          type: string
+        revisedLoanDue:
+          type: integer
+    LoanHistoryRequest:
+      type: object
+      properties:
+        taxpayerid:
+          type: string
+    LoanHistoryResponse:
+      type: array
+      properties:
+        referenceId:
+          type: string
+        loanAmount:
+          type: integer
+        tenure:
+          type: integer
+        interest:
+          type: integer
+        duedate:
+          type: string
+        paymentDate:
+          type: string
+    LoanResponse:
+      type: object
+      properties:
+        refernceId:
+          type: string
+        loanApplicationStatus:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+  examples:
+    loanApplicationResponse:
+      summary: Loan Application response
+      value:
+        referenceId: a8872554
+        loanApplicationStatus: Loan Granted
+    extendLoanResponse:
+      summary: extend Loan DueDate
+      value:
+         referenceId: a8872554
+         extendedDueDate: 31/08/2022
+         revisedLoanDue: 25000
+    loanHistoryResponse:
+      summary: Get the history of loans for a customer
+      value:
+        referenceId: a8872554
+        loanAmount: 25000
+        tenure: 3
+        interest: 7.5%
+        duedate: 31/08/2022
+        paymentDate: 07/09/2022
