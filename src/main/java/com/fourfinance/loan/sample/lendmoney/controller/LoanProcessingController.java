@@ -1,7 +1,7 @@
 package com.fourfinance.loan.sample.lendmoney.controller;
 
 import com.fourfinance.loan.sample.lendmoney.model.ErrorResponse;
-import com.fourfinance.loan.sample.lendmoney.model.LoanHistoryResponse;
+import com.fourfinance.loan.sample.lendmoney.model.LoanHistoryEntity;
 import com.fourfinance.loan.sample.lendmoney.model.LoanRequest;
 import com.fourfinance.loan.sample.lendmoney.model.LoanResponse;
 import com.fourfinance.loan.sample.lendmoney.service.LoanProcessingService;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +60,7 @@ public class LoanProcessingController {
                 , HttpStatus.OK);
     }
 
-    @PostMapping(path = "/extendLoan")
+    @PostMapping(path = "{referenceId}/extendLoan")
     @Operation(
             summary = "To extend existing due date",
             tags = {"LoanApplicationJourney"})
@@ -81,15 +82,15 @@ public class LoanProcessingController {
             )
     })
     public ResponseEntity<Object> loanPostponeRequest(
-            @RequestBody LoanRequest loanRequest
+            @PathVariable("referenceId") int referenceId
     ) {
-        return new ResponseEntity<>(loanProcessingService.postponeLoanRequest()
+        return new ResponseEntity<>(loanProcessingService.postponeLoanRequest(referenceId)
                 , HttpStatus.OK);
     }
 
 
     @GetMapping(
-            value = "/retrieveLoanHistory",
+            value = "{taxPayerId}/retrieveLoanHistory",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get the history of loans for a customer",
@@ -99,7 +100,7 @@ public class LoanProcessingController {
             @ApiResponse(
                     responseCode = "200", description = "Successful operation",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = LoanHistoryResponse.class))}
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = LoanHistoryEntity.class))}
             ),
             @ApiResponse(
                     responseCode = "404", description = "No loan history found",
@@ -112,8 +113,10 @@ public class LoanProcessingController {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    public ResponseEntity<Object> getLoanHistory() {
-        return new ResponseEntity<>(loanProcessingService.getLoanHistory(),
+    public ResponseEntity<Object> getLoanHistory(
+            @PathVariable("taxPayerId") String taxPayerId
+    ) {
+        return new ResponseEntity<>(loanProcessingService.getLoanHistory(taxPayerId),
                 HttpStatus.OK);
     }
 }

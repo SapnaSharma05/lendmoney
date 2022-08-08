@@ -22,6 +22,6 @@ public class LoanRequest {
     private String taxPayerId;
     private String employmentStatus;
     private Integer noOfDependants;
-    private String annualIncome;
+    private int annualIncome;
     private String emailAddress;
 }

@@ -4,21 +4,18 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
-
-        <property name="connection.driver_class">net.ucanaccess.jdbc.UcanaccessDriver</property>
-        <property name="connection.url">jdbc:ucanaccess:;DRIVER=Microsoft Access Driver (*.accdb);DBQ=C:/Users/sapna.g.sharma/Documents/4Finance.accdb</property>
-        <!--<property name="connection.username"></property>
-        <property name="connection.password"></property>-->
-
-        <!--<property name="hibernate.connection.driver_class">sun.jdbc.odbc.JdbcOdbcDriver</property>
-        <property name="hibernate.connection.url">jdbc:ucanaccess:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C://Users//sapna.g.sharma//Documents//4Finance.accdb</property>
-        <property name="connection.username"></property>
-        <property name="connection.password"></property>
-        --><property name="connection.pool_size">1</property>
+        <property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+        <property name="connection.url">jdbc:sqlserver://apitest255.database.windows.net:1433;DatabaseName=apitest</property>
+        <property name="connection.username">sqladmin@apitest255</property>
+        <property name="connection.password">=Oc@"bQ"L"s#:N~</property>
+        <property name="connection.pool_size">100</property>
         <property name="current_session_context_class">thread</property>
         <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
         <property name="show_sql">true</property>
         <property name="hbm2ddl.auto">update</property>
-        <mapping class="IPAddressCheck.hbm.xml"/>
+        <property name="sslProtocol">TLSv1</property>
+        <mapping class="com.fourfinance.loan.sample.lendmoney.model.IPAddressEntity"/>
+        <mapping class="com.fourfinance.loan.sample.lendmoney.model.LoanApplicationDetailsEntity"/>
+        <mapping class="com.fourfinance.loan.sample.lendmoney.model.LoanHistoryEntity"/>
     </session-factory>
 </hibernate-configuration>

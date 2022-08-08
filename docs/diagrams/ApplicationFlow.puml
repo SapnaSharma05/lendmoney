@@ -8,6 +8,8 @@ ref over WebAPI,WebAPI
 Perform risk analysis based on time of application, amount and IP address.
 If success then loan reference will be created, otherwise rejection response will be sent
 end ref
+WebAPI -> Database: Saves approved loan application data to database
+Database --> WebAPI : Data saved successfully
 WebAPI --> WebInterface : Loan application response
 
 
@@ -15,6 +17,8 @@ WebInterface -> WebAPI: Loan extend request
 ref over WebAPI,WebAPI
 Loan due date extends by week with increase in interest by factor of 1.5
 end ref
+WebAPI -> Database: Updates due date, interest rate for extension
+Database --> WebAPI: Update successful
 WebAPI --> WebInterface: New due date with new interest rate
 
 
@@ -22,7 +26,11 @@ WebInterface -> WebAPI: Requests for loans history
 ref over WebAPI,WebAPI
 Pulls the history based on tax payer id of user
 end ref
+WebAPI -> Database: Queries database to get history
+Database --> WebAPI: Returns data with history
 WebAPI --> WebInterface: Loans history response
+
+
 
 
 @enduml

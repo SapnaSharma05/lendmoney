@@ -1,61 +1,42 @@
 package com.fourfinance.loan.sample.lendmoney.dao;
 
-import lombok.AllArgsConstructor;
+import com.fourfinance.loan.sample.lendmoney.model.LoanApplicationDetailsEntity;
+import com.fourfinance.loan.sample.lendmoney.model.LoanRequest;
+import com.fourfinance.loan.sample.lendmoney.utility.LoanUtil;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
+import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+import java.util.Date;
+
+@Component
 public class LoanApplicationDao {
 
-    public static void main(String s[]){
-        SessionFactory factory = null;
-        try {
-            factory = new Configuration().configure().buildSessionFactory();
-        }catch (Throwable ex) {
-            System.err.println("Failed to create sessionFactory object." + ex);
-            throw new ExceptionInInitializerError(ex);
-        }
+    public String saveLoanApplicationDetails(LoanRequest req) {
 
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
+        LoanApplicationDetailsEntity loanApplicationDetails = new LoanApplicationDetailsEntity();
+        loanApplicationDetails.setApplicantName(req.getApplicantName());
+        loanApplicationDetails.setApplicantDateOfBirth(req.getApplicantDateOfBirth());
+        loanApplicationDetails.setGender(req.getGender());
+        loanApplicationDetails.setContactNumber(req.getContactNumber());
+        loanApplicationDetails.setEmailAddress(req.getEmailAddress());
+        loanApplicationDetails.setPermanentAddress(req.getPermanentAddress());
+        loanApplicationDetails.setPresentAddress(req.getPresentAddress());
+        loanApplicationDetails.setTaxPayerId(req.getTaxPayerId());
+        loanApplicationDetails.setEmploymentStatus(req.getEmploymentStatus());
+        loanApplicationDetails.setNoOfDependents(req.getNoOfDependants());
+        loanApplicationDetails.setLoanAmount(req.getLoanAmount());
+        loanApplicationDetails.setLoanTenure(req.getLoanTenure());
+        loanApplicationDetails.setAnnualIncome(req.getAnnualIncome());
+        loanApplicationDetails.setInterest(7);
+        loanApplicationDetails.setDueDate(new Date());
 
-            /*  ManageEmployee ME = new ManageEmployee();
-             *//* Add few employee records in database *//*
-            Integer empID1 = ME.addEmployee("Zara", "Ali", 1000);
-            Integer empID2 = ME.addEmployee("Daisy", "Das", 5000);
-            Integer empID3 = ME.addEmployee("John", "Paul", 10000);
-            *//* List down all the employees *//*
-            ME.listEmployees();
-            *//* Update employee's records *//*
-            ME.updateEmployee(empID1, 5000)*/
-            System.out.print("test");
+        Session session = LoanUtil.getDatabaseConnection();
+        Transaction tx = session.beginTransaction();
+        Object referenceId = session.save(loanApplicationDetails);
+        tx.commit();
+        session.close();
 
-
-            tx.commit();
-        }
-        catch (Exception e) {
-            if (tx!=null) tx.rollback();
-            e.printStackTrace();
-        }finally {
-            session.close();
-        }
-
+        return referenceId.toString();
     }
-
-
-/*
-      @Override
-    public void run(String args[]){
-        IPAddressEntity iPAddressEntity =  IPAddressEntity.builder()
-                .ipAddress("1.2.3.4")
-                .count(1).build();
-        loanRepo.save(iPAddressEntity);
-
-    }
-*/
-
 }
