@@ -1,0 +1,43 @@
+-------------Table creation DDL queries----------------------
+
+//Table to store IP address for loan requests
+CREATE TABLE IPAddressCheck (
+    ID int NOT NULL PRIMARY KEY,
+    IPAddress varchar(15) NOT NULL,
+    TaxPayerId varchar(20) NOT NULL
+);
+
+//Table to store approved loans
+CREATE TABLE LoanApplicationDetails (
+    ReferenceId int NOT NULL PRIMARY KEY,
+    ApplicantName varchar(100) NOT NULL,
+    ApplicantDateOfBirth varchar(20),
+	Gender varchar(7),
+	ContactNumber int,
+	EmailAddress varchar(50),
+	PermanentAddress varchar(100),
+	PresentAddress varchar(100),
+	TaxPayerId varchar(20) NOT NULL,
+	EmploymentStatus varchar(20),
+	NoOfDependents int,
+	LoanAmount int NOT NULL,
+	LoanTenure int NOT NULL,
+	Interest float NOT NULL,
+	DueDate date NOT NULL,
+	RevisedInterest float,
+	RevisedDueDate date,
+	AnnualIncome int
+);
+
+//Table to store loan history
+CREATE TABLE LoanHistory (
+	ReferenceId int FOREIGN KEY REFERENCES LoanApplicationDetails(ReferenceId),
+	TaxPayerId varchar(20) NOT NULL,
+	LoanAmount int NOT NULL,
+	LoanTenure int NOT NULL,
+	RateOfInterest float,
+	LoanStatus varchar(20),
+	RevisedDueDate Date,
+	RevisedInterest float
+);
+
