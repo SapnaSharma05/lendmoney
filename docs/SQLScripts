@@ -40,4 +40,5 @@ CREATE TABLE LoanHistory (
 	RevisedDueDate Date,
 	RevisedInterest float
 );
-
+//This script will be scheduled and executed midnight everyday to empty the contents of IPAddressCheck table.
+DELETE FROM IPAddressCheck;

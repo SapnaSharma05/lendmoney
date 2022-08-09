@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,4 +26,5 @@ public class LoanRequest {
     private Integer noOfDependants;
     private int annualIncome;
     private String emailAddress;
+    private Date dueDate;
 }
