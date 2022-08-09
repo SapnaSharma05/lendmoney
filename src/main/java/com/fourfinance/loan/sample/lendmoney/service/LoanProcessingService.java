@@ -58,6 +58,7 @@ public class LoanProcessingService {
     }
 
     public ExtendedLoanResponse postponeLoanRequest(int referenceId) {
+
         Double interest = (Double) 0.0;
         Timestamp dueDate = null;
         List<Object[]> detailsUpdate = loanExtendDao.getDetailsForLoanExtend(referenceId);
