@@ -4,6 +4,7 @@ package com.fourfinance.loan.sample.lendmoney.service;
 import com.fourfinance.loan.sample.lendmoney.dao.LoanApplicationDao;
 import com.fourfinance.loan.sample.lendmoney.dao.LoanExtendDao;
 import com.fourfinance.loan.sample.lendmoney.dao.LoanHistoryDao;
+import com.fourfinance.loan.sample.lendmoney.model.ExtendedLoanResponse;
 import com.fourfinance.loan.sample.lendmoney.model.LoanHistoryResponse;
 import com.fourfinance.loan.sample.lendmoney.model.LoanRequest;
 import com.fourfinance.loan.sample.lendmoney.model.LoanResponse;
@@ -56,17 +57,16 @@ public class LoanProcessingService {
         return loanHistoryDao.getLoanHistoryForUser(taxPayerId);
     }
 
-    public LoanResponse postponeLoanRequest(int referenceId) {
+    public ExtendedLoanResponse postponeLoanRequest(int referenceId) {
         Double interest = (Double) 0.0;
         Timestamp dueDate = null;
-        List<Object[]> i = loanExtendDao.getDetailsForLoanExtend(referenceId);
-
-        for (Object q[] : i) {
-            dueDate = (Timestamp) q[0];
-            interest = (Double) q[1];
+        List<Object[]> detailsUpdate = loanExtendDao.getDetailsForLoanExtend(referenceId);
+        for (Object obj[] : detailsUpdate) {
+            dueDate = (Timestamp) obj[0];
+            interest = (Double) obj[1];
         }
-
         loanExtendDao.updateLoanDetailsForExtension(referenceId, interest * 1.5, LoanUtil.addDays(dueDate, 7));
-        return new LoanResponse();
+        return ExtendedLoanResponse.builder().extendedDueDate(String.valueOf(LoanUtil.addDays(dueDate, 7)))
+                .revisedLoanDue(interest * 1.5).referenceId(referenceId).build();
     }
 }
