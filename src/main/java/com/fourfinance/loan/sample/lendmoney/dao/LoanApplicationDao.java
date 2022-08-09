@@ -1,10 +1,12 @@
 package com.fourfinance.loan.sample.lendmoney.dao;
 
+import com.fourfinance.loan.sample.lendmoney.model.IPAddressEntity;
 import com.fourfinance.loan.sample.lendmoney.model.LoanApplicationDetailsEntity;
 import com.fourfinance.loan.sample.lendmoney.model.LoanRequest;
 import com.fourfinance.loan.sample.lendmoney.utility.LoanUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -38,5 +40,36 @@ public class LoanApplicationDao {
         session.close();
 
         return referenceId.toString();
+    }
+
+    public String saveIPAddress(String ipAddress, String taxPayerId){
+        IPAddressEntity iPAddressEntity = new IPAddressEntity();
+        iPAddressEntity.setIpAddress(ipAddress);
+        iPAddressEntity.setTaxPayerId(taxPayerId);
+
+        Session session = LoanUtil.getDatabaseConnection();
+        Transaction tx = session.beginTransaction();
+        Object referenceId = session.save(iPAddressEntity);
+        tx.commit();
+        session.close();
+
+        return referenceId.toString();
+
+
+    }
+
+    public String getIPAddressCount(String ipAddress, String taxPayerId){
+
+        String hql = "select count(I.ipAddress) from IPAddressEntity I where\n" +
+                "I.ipAddress = :ipAddress and I.taxPayerId = :taxPayerId";
+
+        Session session = LoanUtil.getDatabaseConnection();
+        Query query = session.createQuery(hql);
+        query.setParameter("taxPayerId",taxPayerId);
+        query.setParameter("ipAddress",ipAddress);
+        Object results = query.list().get(0);
+        session.close();
+        return results.toString();
+
     }
 }

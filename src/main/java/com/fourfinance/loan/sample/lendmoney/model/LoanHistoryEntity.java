@@ -30,14 +30,14 @@ public class LoanHistoryEntity {
     @Column(name = "AnnualIncome")
     int annualIncome;
 
-    @Column(name = "rateOfInterest")
-    int interest;
+    @Column(name = "RateOfInterest")
+    double interest;
 
     @Column(name = "LoanStatus")
     Date loanStatus;
 
     @Column(name = "RevisedInterest")
-    int revisedInterest;
+    double revisedInterest;
 
     @Column(name = "RevisedDueDate")
     Date revisedDueDate;
@@ -82,7 +82,7 @@ public class LoanHistoryEntity {
         this.annualIncome = annualIncome;
     }
 
-    public int getInterest() {
+    public double getInterest() {
         return interest;
     }
 
@@ -98,11 +98,11 @@ public class LoanHistoryEntity {
         this.loanStatus = loanStatus;
     }
 
-    public int getRevisedInterest() {
+    public double getRevisedInterest() {
         return revisedInterest;
     }
 
-    public void setRevisedInterest(int revisedInterest) {
+    public void setRevisedInterest(double revisedInterest) {
         this.revisedInterest = revisedInterest;
     }
 

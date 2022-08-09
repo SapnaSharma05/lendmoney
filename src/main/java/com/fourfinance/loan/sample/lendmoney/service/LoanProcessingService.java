@@ -8,12 +8,13 @@ import com.fourfinance.loan.sample.lendmoney.model.LoanHistoryResponse;
 import com.fourfinance.loan.sample.lendmoney.model.LoanRequest;
 import com.fourfinance.loan.sample.lendmoney.model.LoanResponse;
 import com.fourfinance.loan.sample.lendmoney.service.Constants.ServiceConstants;
+import com.fourfinance.loan.sample.lendmoney.utility.LoanUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,43 +28,45 @@ public class LoanProcessingService {
     LoanHistoryDao loanHistoryDao;
     LoanExtendDao loanExtendDao;
 
-    public LoanResponse processLoanRequest(LoanRequest loanRequest, String remoteAddr){
+    public LoanResponse processLoanRequest(LoanRequest loanRequest, String remoteAddress) {
 
-        System.out.println("IP address "+remoteAddr);
-        boolean isHighRisk = performRiskAnalysis(loanRequest.getLoanAmount());
-        if(isHighRisk) {
-            return LoanResponse.builder().referenceId(String.valueOf(ServiceConstants.NULL)).loanApplicationStatus(String.valueOf(ServiceConstants.REJECTED)).build();
-        } else{
-            return LoanResponse.builder().referenceId(loanApplicationDao.saveLoanApplicationDetails(loanRequest))
-                    .loanApplicationStatus(String.valueOf(ServiceConstants.APPROVED)).build();
+        if (remoteAddress != null)
+            loanApplicationDao.saveIPAddress(remoteAddress, loanRequest.getTaxPayerId());
+        int countOfIPhits = Integer.parseInt(loanApplicationDao.getIPAddressCount(remoteAddress, loanRequest.getTaxPayerId()));
 
-        }
+        boolean isHighRisk = performRiskAnalysis(loanRequest.getLoanAmount(), countOfIPhits);
+
+        return isHighRisk ? LoanResponse.builder().referenceId(String.valueOf(ServiceConstants.NULL)).loanApplicationStatus(String.valueOf(ServiceConstants.REJECTED)).build() :
+                LoanResponse.builder().referenceId(loanApplicationDao.saveLoanApplicationDetails(loanRequest))
+                        .loanApplicationStatus(String.valueOf(ServiceConstants.APPROVED)).build();
     }
 
-    public boolean performRiskAnalysis(Integer amount) {
+    public boolean performRiskAnalysis(Integer amount, Integer countOfIPhits) {
+
         LocalTime rangeEnd = LocalTime.parse("06:00:00");
         LocalTime rangeStart = LocalTime.parse("00:00:00");
-        if ((LocalTime.now().isAfter(rangeStart) && LocalTime.now().isBefore(rangeEnd))
-                && (amount > MAX_POSSIBLE_AMOUNT)) {
+        if (((LocalTime.now().isAfter(rangeStart) && LocalTime.now().isBefore(rangeEnd))
+                && (amount > MAX_POSSIBLE_AMOUNT)) || countOfIPhits > 3) {
             return true;
         }
         return false;
     }
 
-    public List<LoanHistoryResponse> getLoanHistory(String taxPayerId){
+    public List<LoanHistoryResponse> getLoanHistory(String taxPayerId) {
         return loanHistoryDao.getLoanHistoryForUser(taxPayerId);
     }
 
-    public LoanResponse postponeLoanRequest(int referenceId){
-        int interest = 0;
-        Date dueDate;
+    public LoanResponse postponeLoanRequest(int referenceId) {
+        Double interest = (Double) 0.0;
+        Timestamp dueDate = null;
+        List<Object[]> i = loanExtendDao.getDetailsForLoanExtend(referenceId);
 
-        List<Object[]> loanToExtend = loanExtendDao.getDetailsForLoanExtend(referenceId);
-        for (Object[] row: loanToExtend) {
-            interest = (int) row[0];
-            dueDate = (Date) row[1];
+        for (Object q[] : i) {
+            dueDate = (Timestamp) q[0];
+            interest = (Double) q[1];
         }
-        //loanExtendDao.updateLoanDetailsForExtension(referenceId, (int) (interest*1.5),;);
+
+        loanExtendDao.updateLoanDetailsForExtension(referenceId, interest * 1.5, LoanUtil.addDays(dueDate, 7));
         return new LoanResponse();
     }
 }
