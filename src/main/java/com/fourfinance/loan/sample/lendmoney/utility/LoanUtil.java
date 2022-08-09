@@ -20,8 +20,8 @@ public class LoanUtil {
 
     public static Timestamp addDays(Timestamp date, int days) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);// w ww.  j ava  2  s  .co m
-        cal.add(Calendar.DATE, days); //minus number would decrement the days
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
         return new Timestamp(cal.getTime().getTime());
 
     }

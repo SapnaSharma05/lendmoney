@@ -5,14 +5,15 @@ import com.fourfinance.loan.sample.lendmoney.dao.LoanExtendDao;
 import com.fourfinance.loan.sample.lendmoney.dao.LoanHistoryDao;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LoanProcessingServiceTest {
 
-    LoanApplicationDao loanApplicationDao;
-    LoanHistoryDao loanHistoryDao;
-    LoanExtendDao loanExtendDao;
+    private final LoanApplicationDao loanApplicationDao = Mockito.mock(LoanApplicationDao.class);
+    private final LoanHistoryDao loanHistoryDao = Mockito.mock(LoanHistoryDao.class);
+    private final LoanExtendDao loanExtendDao = Mockito.mock(LoanExtendDao.class);
 
     LoanProcessingService loanProcessingService = new LoanProcessingService(loanApplicationDao,loanHistoryDao,loanExtendDao);
 
@@ -22,5 +23,4 @@ public class LoanProcessingServiceTest {
         boolean result = loanProcessingService.performRiskAnalysis(amount,ipHits);
         assertEquals(expectedResult,result);
     }
-
 }
