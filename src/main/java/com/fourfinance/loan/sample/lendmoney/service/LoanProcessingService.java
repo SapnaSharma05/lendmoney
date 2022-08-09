@@ -59,13 +59,16 @@ public class LoanProcessingService {
 
     public ExtendedLoanResponse postponeLoanRequest(int referenceId) {
 
-        Double interest = (Double) 0.0;
+        Double interest = 0.0;
         Timestamp dueDate = null;
+
         List<Object[]> detailsUpdate = loanExtendDao.getDetailsForLoanExtend(referenceId);
+
         for (Object obj[] : detailsUpdate) {
             dueDate = (Timestamp) obj[0];
             interest = (Double) obj[1];
         }
+
         loanExtendDao.updateLoanDetailsForExtension(referenceId, interest * 1.5, LoanUtil.addDays(dueDate, 7));
         return ExtendedLoanResponse.builder().extendedDueDate(String.valueOf(LoanUtil.addDays(dueDate, 7)))
                 .revisedLoanDue(interest * 1.5).referenceId(referenceId).build();
